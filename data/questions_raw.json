@@ -1,0 +1,597 @@
+[
+  {
+    "source_id": "q1",
+    "question": "A company collects data for temperature, humidity, and atmospheric pressure in cities across multiple continents. The average volume of data that the company collects from each site daily is 500 GB. Each site has a high-speed Internet connection. The company wants to aggregate the data from all these global sites as quickly as possible in a single Amazon S3 bucket. The solution must minimize operational complexity. Which solution meets these requirements?",
+    "choices": {
+      "A": "Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.",
+      "B": "Upload the data from each site to an S3 bucket in the closest Region. Use S3 Cross-Region Replication to copy objects to the destination S3 bucket. Then remove the data from the origin S3 bucket.",
+      "C": "Schedule AWS Snowball Edge Storage Optimized device jobs daily to transfer data from each site to the closest Region. Use S3 Cross-Region Replication to copy objects to the destination S3 bucket.",
+      "D": "Upload the data from each site to an Amazon EC2 instance in the closest Region. Store the data in an Amazon Elastic Block Store (Amazon EBS) volume. At regular intervals, take an EBS snapshot and copy it to the Region that contains the destination S3 bucket. Restore the EBS volume in that Region."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 95,
+        "votes": 160
+      },
+      {
+        "option": "B",
+        "pct": 5,
+        "votes": 8
+      }
+    ]
+  },
+  {
+    "source_id": "q2",
+    "question": "A company needs the ability to analyze the log files of its proprietary application. The logs are stored in JSON format in an Amazon S3 bucket. Queries will be simple and will run on-demand. A solutions architect needs to perform the analysis with minimal changes to the existing architecture. What should the solutions architect do to meet these requirements with the LEAST amount of operational overhead?",
+    "choices": {
+      "A": "Use Amazon Redshift to load all the content into one place and run the SQL queries as needed.",
+      "B": "Use Amazon CloudWatch Logs to store the logs. Run SQL queries as needed from the Amazon CloudWatch console.",
+      "C": "Use Amazon Athena directly with Amazon S3 to run the queries as needed.",
+      "D": "Use AWS Glue to catalog the logs. Use a transient Apache Spark cluster on Amazon EMR to run the SQL queries as needed."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 1,
+        "votes": 1
+      },
+      {
+        "option": "C",
+        "pct": 99,
+        "votes": 134
+      }
+    ]
+  },
+  {
+    "source_id": "q3",
+    "question": "A company uses AWS Organizations to manage multiple AWS accounts for different departments. The management account has an Amazon S3 bucket that contains project reports. The company wants to limit access to this S3 bucket to only users of accounts within the organization in AWS Organizations. Which solution meets these requirements with the LEAST amount of operational overhead?",
+    "choices": {
+      "A": "Add the aws PrincipalOrgID global condition key with a reference to the organization ID to the S3 bucket policy.",
+      "B": "Create an organizational unit (OU) for each department. Add the aws:PrincipalOrgPaths global condition key to the S3 bucket policy.",
+      "C": "Use AWS CloudTrail to monitor the CreateAccount, InviteAccountToOrganization, LeaveOrganization, and RemoveAccountFromOrganization events. Update the S3 bucket policy accordingly.",
+      "D": "Tag each user that needs access to the S3 bucket. Add the aws:PrincipalTag global condition key to the S3 bucket policy."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 97,
+        "votes": 193
+      },
+      {
+        "option": "B",
+        "pct": 3,
+        "votes": 5
+      },
+      {
+        "option": "C",
+        "pct": 1,
+        "votes": 1
+      }
+    ]
+  },
+  {
+    "source_id": "q4",
+    "question": "An application runs on an Amazon EC2 instance in a VPC. The application processes logs that are stored in an Amazon S3 bucket. The EC2 instance needs to access the S3 bucket without connectivity to the internet. Which solution will provide private network connectivity to Amazon S3?",
+    "choices": {
+      "A": "Create a gateway VPC endpoint to the S3 bucket.",
+      "B": "Stream the logs to Amazon CloudWatch Logs. Export the logs to the S3 bucket.",
+      "C": "Create an instance profile on Amazon EC2 to allow S3 access.",
+      "D": "Create an Amazon API Gateway API with a private link to access the S3 endpoint."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 99,
+        "votes": 193
+      },
+      {
+        "option": "D",
+        "pct": 1,
+        "votes": 1
+      }
+    ]
+  },
+  {
+    "source_id": "q5",
+    "question": "A company is hosting a web application on AWS using a single Amazon EC2 instance that stores user-uploaded documents in an Amazon EBS volume. For better scalability and availability, the company duplicated the architecture and created a second EC2 instance and EBS volume in another Availability Zone, placing both behind an Application Load Balancer. After completing this change, users reported that, each time they refreshed the website, they could see one subset of their documents or the other, but never all of the documents at the same time. What should a solutions architect propose to ensure users see all of their documents at once?",
+    "choices": {
+      "A": "Copy the data so both EBS volumes contain all the documents",
+      "B": "Configure the Application Load Balancer to direct a user to the server with the documents",
+      "C": "Copy the data from both EBS volumes to Amazon EFS. Modify the application to save new documents to Amazon EFS",
+      "D": "Configure the Application Load Balancer to send the request to both servers. Return each document from the correct server"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "C",
+        "pct": 98,
+        "votes": 149
+      },
+      {
+        "option": "D",
+        "pct": 2,
+        "votes": 3
+      }
+    ]
+  },
+  {
+    "source_id": "q6",
+    "question": "A company uses NFS to store large video files in on-premises network attached storage. Each video file ranges in size from 1 MB to 500 GB. The total storage is 70 TB and is no longer growing. The company decides to migrate the video files to Amazon S3. The company must migrate the video files as soon as possible while using the least possible network bandwidth. Which solution will meet these requirements?",
+    "choices": {
+      "A": "Create an S3 bucket. Create an IAM role that has permissions to write to the S3 bucket. Use the AWS CLI to copy all files locally to the S3 bucket.",
+      "B": "Create an AWS Snowball Edge job. Receive a Snowball Edge device on premises. Use the Snowball Edge client to transfer data to the device. Return the device so that AWS can import the data into Amazon S3.",
+      "C": "Deploy an S3 File Gateway on premises. Create a public service endpoint to connect to the S3 File Gateway. Create an S3 bucket. Create a new NFS file share on the S3 File Gateway. Point the new file share to the S3 bucket. Transfer the data from the existing NFS file share to the S3 File Gateway.",
+      "D": "Set up an AWS Direct Connect connection between the on-premises network and AWS. Deploy an S3 File Gateway on premises. Create a public virtual interface (VIF) to connect to the S3 File Gateway. Create an S3 bucket. Create a new NFS file share on the S3 File Gateway. Point the new file share to the S3 bucket. Transfer the data from the existing NFS file share to the S3 File Gateway."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "B",
+        "pct": 88,
+        "votes": 290
+      },
+      {
+        "option": "C",
+        "pct": 11,
+        "votes": 36
+      },
+      {
+        "option": "D",
+        "pct": 1,
+        "votes": 3
+      }
+    ]
+  },
+  {
+    "source_id": "q7",
+    "question": "A company has an application that ingests incoming messages. Dozens of other applications and microservices then quickly consume these messages. The number of messages varies drastically and sometimes increases suddenly to 100,000 each second. The company wants to decouple the solution and increase scalability. Which solution meets these requirements?",
+    "choices": {
+      "A": "Persist the messages to Amazon Kinesis Data Analytics. Configure the consumer applications to read and process the messages.",
+      "B": "Deploy the ingestion application on Amazon EC2 instances in an Auto Scaling group to scale the number of EC2 instances based on CPU metrics.",
+      "C": "Write the messages to Amazon Kinesis Data Streams with a single shard. Use an AWS Lambda function to preprocess messages and store them in Amazon DynamoDB. Configure the consumer applications to read from DynamoDB to process the messages.",
+      "D": "Publish the messages to an Amazon Simple Notification Service (Amazon SNS) topic with multiple Amazon Simple Queue Service (Amazon SOS) subscriptions. Configure the consumer applications to process the messages from the queues."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 11,
+        "votes": 27
+      },
+      {
+        "option": "B",
+        "pct": 1,
+        "votes": 3
+      },
+      {
+        "option": "C",
+        "pct": 2,
+        "votes": 4
+      },
+      {
+        "option": "D",
+        "pct": 86,
+        "votes": 210
+      }
+    ]
+  },
+  {
+    "source_id": "q8",
+    "question": "A company is migrating a distributed application to AWS. The application serves variable workloads. The legacy platform consists of a primary server that coordinates jobs across multiple compute nodes. The company wants to modernize the application with a solution that maximizes resiliency and scalability. How should a solutions architect design the architecture to meet these requirements?",
+    "choices": {
+      "A": "Configure an Amazon Simple Queue Service (Amazon SQS) queue as a destination for the jobs. Implement the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure EC2 Auto Scaling to use scheduled scaling.",
+      "B": "Configure an Amazon Simple Queue Service (Amazon SQS) queue as a destination for the jobs. Implement the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure EC2 Auto Scaling based on the size of the queue.",
+      "C": "Implement the primary server and the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure AWS CloudTrail as a destination for the jobs. Configure EC2 Auto Scaling based on the load on the primary server.",
+      "D": "Implement the primary server and the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure Amazon EventBridge (Amazon CloudWatch Events) as a destination for the jobs. Configure EC2 Auto Scaling based on the load on the compute nodes."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 2,
+        "votes": 5
+      },
+      {
+        "option": "B",
+        "pct": 93,
+        "votes": 237
+      },
+      {
+        "option": "C",
+        "pct": 2,
+        "votes": 5
+      },
+      {
+        "option": "D",
+        "pct": 4,
+        "votes": 9
+      }
+    ]
+  },
+  {
+    "source_id": "q9",
+    "question": "A company is running an SMB file server in its data center. The file server stores large files that are accessed frequently for the first few days after the files are created. After 7 days the files are rarely accessed. The total data size is increasing and is close to the company's total storage capacity. A solutions architect must increase the company's available storage space without losing low-latency access to the most recently accessed files. The solutions architect must also provide file lifecycle management to avoid future storage issues. Which solution will meet these requirements?",
+    "choices": {
+      "A": "Use AWS DataSync to copy data that is older than 7 days from the SMB file server to AWS.",
+      "B": "Create an Amazon S3 File Gateway to extend the company's storage space. Create an S3 Lifecycle policy to transition the data to S3 Glacier Deep Archive after 7 days.",
+      "C": "Create an Amazon FSx for Windows File Server file system to extend the company's storage space.",
+      "D": "Install a utility on each user's computer to access Amazon S3. Create an S3 Lifecycle policy to transition the data to S3 Glacier Flexible Retrieval after 7 days."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 3,
+        "votes": 7
+      },
+      {
+        "option": "B",
+        "pct": 85,
+        "votes": 175
+      },
+      {
+        "option": "D",
+        "pct": 12,
+        "votes": 25
+      }
+    ]
+  },
+  {
+    "source_id": "q10",
+    "question": "A company is building an ecommerce web application on AWS. The application sends information about new orders to an Amazon API Gateway REST API to process. The company wants to ensure that orders are processed in the order that they are received. Which solution will meet these requirements?",
+    "choices": {
+      "A": "Use an API Gateway integration to publish a message to an Amazon Simple Notification Service (Amazon SNS) topic when the application receives an order. Subscribe an AWS Lambda function to the topic to perform processing.",
+      "B": "Use an API Gateway integration to send a message to an Amazon Simple Queue Service (Amazon SQS) FIFO queue when the application receives an order. Configure the SQS FIFO queue to invoke an AWS Lambda function for processing.",
+      "C": "Use an API Gateway authorizer to block any requests while the application processes an order.",
+      "D": "Use an API Gateway integration to send a message to an Amazon Simple Queue Service (Amazon SQS) standard queue when the application receives an order. Configure the SQS standard queue to invoke an AWS Lambda function for processing."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 2,
+        "votes": 5
+      },
+      {
+        "option": "B",
+        "pct": 98,
+        "votes": 255
+      }
+    ]
+  },
+  {
+    "source_id": "q21",
+    "question": "An ecommerce company wants to launch a one-deal-a-day website on AWS. Each day will feature exactly one product on sale for a period of 24 hours. The company wants to be able to handle millions of requests each hour with millisecond latency during peak hours. Which solution will meet these requirements with the LEAST operational overhead?",
+    "choices": {
+      "A": "Use Amazon S3 to host the full website in different S3 buckets. Add Amazon CloudFront distributions. Set the S3 buckets as origins for the distributions. Store the order data in Amazon S3.",
+      "B": "Deploy the full website on Amazon EC2 instances that run in Auto Scaling groups across multiple Availability Zones. Add an Application Load Balancer (ALB) to distribute the website traffic. Add another ALB for the backend APIs. Store the data in Amazon RDS for MySQL.",
+      "C": "Migrate the full application to run in containers. Host the containers on Amazon Elastic Kubernetes Service (Amazon EKS). Use the Kubernetes Cluster Autoscaler to increase and decrease the number of pods to process bursts in traffic. Store the data in Amazon RDS for MySQL.",
+      "D": "Use an Amazon S3 bucket to host the website's static content. Deploy an Amazon CloudFront distribution. Set the S3 bucket as the origin. Use Amazon API Gateway and AWS Lambda functions for the backend APIs. Store the data in Amazon DynamoDB."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "D",
+        "pct": 100,
+        "votes": 146
+      }
+    ]
+  },
+  {
+    "source_id": "q22",
+    "question": "A solutions architect is using Amazon S3 to design the storage architecture of a new digital media application. The media files must be resilient to the loss of an Availability Zone. Some files are accessed frequently while other files are rarely accessed in an unpredictable pattern. The solutions architect must minimize the costs of storing and retrieving the media files. Which storage option meets these requirements?",
+    "choices": {
+      "A": "S3 Standard",
+      "B": "S3 Intelligent-Tiering",
+      "C": "S3 Standard-Infrequent Access (S3 Standard-IA)",
+      "D": "S3 One Zone-Infrequent Access (S3 One Zone-IA)"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "B",
+        "pct": 99,
+        "votes": 121
+      },
+      {
+        "option": "D",
+        "pct": 1,
+        "votes": 1
+      }
+    ]
+  },
+  {
+    "source_id": "q23",
+    "question": "A company is storing backup files by using Amazon S3 Standard storage. The files are accessed frequently for 1 month. However, the files are not accessed after 1 month. The company must keep the files indefinitely. Which storage solution will meet these requirements MOST cost-effectively?",
+    "choices": {
+      "A": "Configure S3 Intelligent-Tiering to automatically migrate objects.",
+      "B": "Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Glacier Deep Archive after 1 month.",
+      "C": "Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Standard-Infrequent Access (S3 Standard-IA) after 1 month.",
+      "D": "Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 One Zone-Infrequent Access (S3 One Zone-IA) after 1 month."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "B",
+        "pct": 97,
+        "votes": 57
+      },
+      {
+        "option": "C",
+        "pct": 2,
+        "votes": 1
+      },
+      {
+        "option": "D",
+        "pct": 2,
+        "votes": 1
+      }
+    ]
+  },
+  {
+    "source_id": "q24",
+    "question": "A company observes an increase in Amazon EC2 costs in its most recent bill. The billing team notices unwanted vertical scaling of instance types for a couple of EC2 instances. A solutions architect needs to create a graph comparing the last 2 months of EC2 costs and perform an in-depth analysis to identify the root cause of the vertical scaling. How should the solutions architect generate the information with the LEAST operational overhead?",
+    "choices": {
+      "A": "Use AWS Budgets to create a budget report and compare EC2 costs based on instance types.",
+      "B": "Use Cost Explorer's granular filtering feature to perform an in-depth analysis of EC2 costs based on instance types.",
+      "C": "Use graphs from the AWS Billing and Cost Management dashboard to compare EC2 costs based on instance types for the last 2 months.",
+      "D": "Use AWS Cost and Usage Reports to create a report and send it to an Amazon S3 bucket. Use Amazon QuickSight with Amazon S3 as a source to generate an interactive graph based on instance types."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "B",
+        "pct": 66,
+        "votes": 114
+      },
+      {
+        "option": "C",
+        "pct": 25,
+        "votes": 43
+      },
+      {
+        "option": "D",
+        "pct": 10,
+        "votes": 17
+      }
+    ]
+  },
+  {
+    "source_id": "q25",
+    "question": "A company is designing an application. The application uses an AWS Lambda function to receive information through Amazon API Gateway and to store the information in an Amazon Aurora PostgreSQL database. During the proof-of-concept stage, the company has to increase the Lambda quotas significantly to handle the high volumes of data that the company needs to load into the database. A solutions architect must recommend a new design to improve scalability and minimize the configuration effort. Which solution will meet these requirements?",
+    "choices": {
+      "A": "Refactor the Lambda function code to Apache Tomcat code that runs on Amazon EC2 instances. Connect the database by using native Java Database Connectivity (JDBC) drivers.",
+      "B": "Change the platform from Aurora to Amazon DynamoDProvision a DynamoDB Accelerator (DAX) cluster. Use the DAX client SDK to point the existing DynamoDB API calls at the DAX cluster.",
+      "C": "Set up two Lambda functions. Configure one function to receive the information. Configure the other function to load the information into the database. Integrate the Lambda functions by using Amazon Simple Notification Service (Amazon SNS).",
+      "D": "Set up two Lambda functions. Configure one function to receive the information. Configure the other function to load the information into the database. Integrate the Lambda functions by using an Amazon Simple Queue Service (Amazon SQS) queue."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "B",
+        "pct": 1,
+        "votes": 2
+      },
+      {
+        "option": "D",
+        "pct": 99,
+        "votes": 171
+      }
+    ]
+  },
+  {
+    "source_id": "q26",
+    "question": "A company needs to review its AWS Cloud deployment to ensure that its Amazon S3 buckets do not have unauthorized configuration changes. What should a solutions architect do to accomplish this goal?",
+    "choices": {
+      "A": "Turn on AWS Config with the appropriate rules.",
+      "B": "Turn on AWS Trusted Advisor with the appropriate checks.",
+      "C": "Turn on Amazon Inspector with the appropriate assessment template.",
+      "D": "Turn on Amazon S3 server access logging. Configure Amazon EventBridge (Amazon Cloud Watch Events)."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 98,
+        "votes": 118
+      },
+      {
+        "option": "B",
+        "pct": 2,
+        "votes": 2
+      },
+      {
+        "option": "D",
+        "pct": 1,
+        "votes": 1
+      }
+    ]
+  },
+  {
+    "source_id": "q27",
+    "question": "A company is launching a new application and will display application metrics on an Amazon CloudWatch dashboard. The company's product manager needs to access this dashboard periodically. The product manager does not have an AWS account. A solutions architect must provide access to the product manager by following the principle of least privilege. Which solution will meet these requirements?",
+    "choices": {
+      "A": "Share the dashboard from the CloudWatch console. Enter the product manager's email address, and complete the sharing steps. Provide a shareable link for the dashboard to the product manager.",
+      "B": "Create an IAM user specifically for the product manager. Attach the CloudWatchReadOnlyAccess AWS managed policy to the user. Share the new login credentials with the product manager. Share the browser URL of the correct dashboard with the product manager.",
+      "C": "Create an IAM user for the company's employees. Attach the ViewOnlyAccess AWS managed policy to the IAM user. Share the new login credentials with the product manager. Ask the product manager to navigate to the CloudWatch console and locate the dashboard by name in the Dashboards section.",
+      "D": "Deploy a bastion server in a public subnet. When the product manager requires access to the dashboard, start the server and share the RDP credentials. On the bastion server, ensure that the browser is configured to open the dashboard URL with cached AWS credentials that have appropriate permissions to view the dashboard."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 72,
+        "votes": 167
+      },
+      {
+        "option": "B",
+        "pct": 27,
+        "votes": 64
+      },
+      {
+        "option": "D",
+        "pct": 1,
+        "votes": 2
+      }
+    ]
+  },
+  {
+    "source_id": "q28",
+    "question": "A company is migrating applications to AWS. The applications are deployed in different accounts. The company manages the accounts centrally by using AWS Organizations. The company's security team needs a single sign-on (SSO) solution across all the company's accounts. The company must continue managing the users and groups in its on-premises self-managed Microsoft Active Directory. Which solution will meet these requirements?",
+    "choices": {
+      "A": "Enable AWS Single Sign-On (AWS SSO) from the AWS SSO console. Create a one-way forest trust or a one-way domain trust to connect the company's self-managed Microsoft Active Directory with AWS SSO by using AWS Directory Service for Microsoft Active Directory.",
+      "B": "Enable AWS Single Sign-On (AWS SSO) from the AWS SSO console. Create a two-way forest trust to connect the company's self-managed Microsoft Active Directory with AWS SSO by using AWS Directory Service for Microsoft Active Directory.",
+      "C": "Use AWS Directory Service. Create a two-way trust relationship with the company's self-managed Microsoft Active Directory.",
+      "D": "Deploy an identity provider (IdP) on premises. Enable AWS Single Sign-On (AWS SSO) from the AWS SSO console."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 27,
+        "votes": 46
+      },
+      {
+        "option": "B",
+        "pct": 69,
+        "votes": 119
+      },
+      {
+        "option": "C",
+        "pct": 1,
+        "votes": 2
+      },
+      {
+        "option": "D",
+        "pct": 3,
+        "votes": 5
+      }
+    ]
+  },
+  {
+    "source_id": "q29",
+    "question": "A company provides a Voice over Internet Protocol (VoIP) service that uses UDP connections. The service consists of Amazon EC2 instances that run in an Auto Scaling group. The company has deployments across multiple AWS Regions. The company needs to route users to the Region with the lowest latency. The company also needs automated failover between Regions. Which solution will meet these requirements?",
+    "choices": {
+      "A": "Deploy a Network Load Balancer (NLB) and an associated target group. Associate the target group with the Auto Scaling group. Use the NLB as an AWS Global Accelerator endpoint in each Region.",
+      "B": "Deploy an Application Load Balancer (ALB) and an associated target group. Associate the target group with the Auto Scaling group. Use the ALB as an AWS Global Accelerator endpoint in each Region.",
+      "C": "Deploy a Network Load Balancer (NLB) and an associated target group. Associate the target group with the Auto Scaling group. Create an Amazon Route 53 latency record that points to aliases for each NLB. Create an Amazon CloudFront distribution that uses the latency record as an origin.",
+      "D": "Deploy an Application Load Balancer (ALB) and an associated target group. Associate the target group with the Auto Scaling group. Create an Amazon Route 53 weighted record that points to aliases for each ALB. Deploy an Amazon CloudFront distribution that uses the weighted record as an origin."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 82,
+        "votes": 195
+      },
+      {
+        "option": "B",
+        "pct": 0,
+        "votes": 1
+      },
+      {
+        "option": "C",
+        "pct": 18,
+        "votes": 43
+      }
+    ]
+  },
+  {
+    "source_id": "q30",
+    "question": "A development team runs monthly resource-intensive tests on its general purpose Amazon RDS for MySQL DB instance with Performance Insights enabled. The testing lasts for 48 hours once a month and is the only process that uses the database. The team wants to reduce the cost of running the tests without reducing the compute and memory attributes of the DB instance. Which solution meets these requirements MOST cost-effectively?",
+    "choices": {
+      "A": "Stop the DB instance when tests are completed. Restart the DB instance when required.",
+      "B": "Use an Auto Scaling policy with the DB instance to automatically scale when tests are completed.",
+      "C": "Create a snapshot when tests are completed. Terminate the DB instance and restore the snapshot when required.",
+      "D": "Modify the DB instance to a low-capacity instance when tests are completed. Modify the DB instance again when required."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "votes": [
+      {
+        "option": "A",
+        "pct": 16,
+        "votes": 24
+      },
+      {
+        "option": "B",
+        "pct": 1,
+        "votes": 1
+      },
+      {
+        "option": "C",
+        "pct": 81,
+        "votes": 118
+      },
+      {
+        "option": "D",
+        "pct": 2,
+        "votes": 3
+      }
+    ]
+  }
+]

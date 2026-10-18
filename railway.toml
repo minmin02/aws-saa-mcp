@@ -1,0 +1,15 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python -m server.mcp_server"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+
+# 필요한 환경 변수 (Railway 대시보드에서 설정):
+#   MCP_TRANSPORT=http
+#   MCP_SECRET_TOKEN=<강력한_랜덤_토큰>
+#   DATA_DIR=/data                    (볼륨 마운트 경로)
+#   HF_HOME=/data/hf_cache            (sentence-transformers 모델 캐시)
+#   PORT                              (Railway가 자동 설정)
