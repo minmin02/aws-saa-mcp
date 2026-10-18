@@ -104,7 +104,17 @@ async def run(start_page: int = 1, end_page: int = 100) -> None:
         if not logged_in:
             print("로그인이 필요합니다. 브라우저에서 ExamTopics에 로그인하세요.")
             print("로그인 완료 후 Enter를 누르면 스크래핑이 시작됩니다.")
-            input(">>> 로그인 완료 후 Enter: ")
+            try:
+                import sys, os
+                if sys.stdin.isatty():
+                    input(">>> 로그인 완료 후 Enter: ")
+                else:
+                    with open("/dev/tty") as tty:
+                        print(">>> 로그인 완료 후 Enter: ", end="", flush=True)
+                        tty.readline()
+            except (EOFError, OSError):
+                print("30초 후 자동으로 시작합니다... (브라우저에서 로그인하세요)")
+                await asyncio.sleep(30)
         else:
             print("로그인 상태 감지됨. 바로 스크래핑을 시작합니다.")
 

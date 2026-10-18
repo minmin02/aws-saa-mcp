@@ -26,6 +26,7 @@ aws-saa-server-http = "server.mcp_server:main_http"
 aws-saa-scrape      = "scraper.examtopics:main"
 aws-saa-seed        = "db.seed:main"
 aws-saa-embed       = "embeddings.search:build_index"
+aws-saa-qmd         = "scraper.parse_qmd:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["scraper", "db", "embeddings", "server", "domain_mapping"]
