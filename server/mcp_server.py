@@ -38,6 +38,195 @@ async def _health(request) -> "Response":
     return JSONResponse({"status": "ok"})
 
 
+@mcp.custom_route("/admin/api/stats", methods=["GET"])
+async def _admin_stats(request) -> "Response":
+    from starlette.responses import JSONResponse
+    conn = get_connection()
+    domains = []
+    for d, name in DOMAIN_NAMES.items():
+        total = conn.execute("SELECT COUNT(*) FROM questions WHERE domain=?", (d,)).fetchone()[0]
+        seen = conn.execute(
+            "SELECT COUNT(DISTINCT up.question_id) FROM user_progress up "
+            "JOIN questions q ON q.id=up.question_id WHERE q.domain=?", (d,)
+        ).fetchone()[0]
+        row = conn.execute(
+            "SELECT SUM(up.is_correct) c, COUNT(*) t FROM user_progress up "
+            "JOIN questions q ON q.id=up.question_id WHERE q.domain=?", (d,)
+        ).fetchone()
+        c, t = (row["c"] or 0), (row["t"] or 0)
+        domains.append({"domain": d, "name": name, "total": total, "seen": seen,
+                        "unseen": total - seen, "accuracy": round(c/t*100, 1) if t else 0})
+    total_q = conn.execute("SELECT COUNT(*) FROM questions").fetchone()[0]
+    seen_q = conn.execute("SELECT COUNT(DISTINCT question_id) FROM user_progress").fetchone()[0]
+    row = conn.execute("SELECT SUM(is_correct) c, COUNT(*) t FROM user_progress").fetchone()
+    c, t = (row["c"] or 0), (row["t"] or 0)
+    conn.close()
+    return JSONResponse({"domains": domains, "total": total_q, "seen": seen_q,
+                         "accuracy": round(c/t*100, 1) if t else 0})
+
+
+@mcp.custom_route("/admin/api/questions", methods=["GET"])
+async def _admin_questions(request) -> "Response":
+    from starlette.responses import JSONResponse
+    domain = request.query_params.get("domain")
+    page = int(request.query_params.get("page", 1))
+    per_page = 20
+    offset = (page - 1) * per_page
+    conn = get_connection()
+    where = "WHERE domain=?" if domain else ""
+    params = [int(domain)] if domain else []
+    total = conn.execute(f"SELECT COUNT(*) FROM questions {where}", params).fetchone()[0]
+    rows = conn.execute(
+        f"SELECT id, source_id, domain, domain_name, "
+        f"substr(question,1,120) AS q_preview, answer FROM questions {where} "
+        f"ORDER BY domain, id LIMIT ? OFFSET ?",
+        params + [per_page, offset]
+    ).fetchall()
+    conn.close()
+    return JSONResponse({
+        "total": total, "page": page, "per_page": per_page,
+        "questions": [dict(r) for r in rows]
+    })
+
+
+_ADMIN_HTML = """<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AWS SAA 문제집 어드민</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e}
+.header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:24px 32px}
+.header h1{font-size:1.4rem;font-weight:700}
+.header p{font-size:.85rem;opacity:.7;margin-top:4px}
+.container{max-width:1100px;margin:0 auto;padding:24px 16px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.stat-card .label{font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em}
+.stat-card .value{font-size:2rem;font-weight:700;color:#1a1a2e;margin:4px 0}
+.stat-card .sub{font-size:.8rem;color:#aaa}
+.domain-table{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:28px}
+.domain-table h2{font-size:1rem;font-weight:600;margin-bottom:14px;color:#444}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;padding:8px 12px;background:#f8f9fb;color:#888;font-weight:600;font-size:.75rem;text-transform:uppercase}
+td{padding:10px 12px;border-top:1px solid #f0f0f0}
+tr:hover td{background:#fafbff}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.72rem;font-weight:600}
+.badge-1{background:#e8f4fd;color:#1a73e8}
+.badge-2{background:#e6f4ea;color:#188038}
+.badge-3{background:#fef7e0;color:#b06000}
+.badge-4{background:#fce8e6;color:#c5221f}
+.bar-bg{background:#eee;border-radius:99px;height:6px;width:100px;display:inline-block;vertical-align:middle}
+.bar-fill{background:#4285f4;border-radius:99px;height:6px}
+.q-section{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.q-section h2{font-size:1rem;font-weight:600;margin-bottom:14px;color:#444}
+.filter-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+select,button{padding:7px 14px;border-radius:8px;border:1px solid #ddd;font-size:.85rem;cursor:pointer}
+button{background:#4285f4;color:#fff;border-color:#4285f4}
+button:hover{background:#3367d6}
+.q-row{padding:10px 0;border-top:1px solid #f0f0f0;font-size:.83rem}
+.q-meta{color:#888;font-size:.75rem;margin-bottom:3px}
+.pagination{display:flex;gap:8px;margin-top:14px;align-items:center;font-size:.85rem}
+.pagination button{padding:5px 12px;font-size:.8rem}
+.pagination .page-info{color:#888}
+#status{text-align:center;padding:40px;color:#aaa}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>AWS SAA-C03 문제집 어드민</h1>
+  <p>도메인별 문제 현황 및 학습 진도</p>
+</div>
+<div class="container">
+  <div class="stats-grid" id="top-stats">
+    <div class="stat-card"><div class="label">전체 문제</div><div class="value" id="s-total">-</div><div class="sub">총 문제 수</div></div>
+    <div class="stat-card"><div class="label">풀이 완료</div><div class="value" id="s-seen">-</div><div class="sub">유니크 문제 기준</div></div>
+    <div class="stat-card"><div class="label">전체 정답률</div><div class="value" id="s-acc">-</div><div class="sub">누적 시도 기준</div></div>
+    <div class="stat-card"><div class="label">남은 문제</div><div class="value" id="s-remain">-</div><div class="sub">미풀이 문제</div></div>
+  </div>
+  <div class="domain-table">
+    <h2>도메인별 현황</h2>
+    <table>
+      <thead><tr><th>도메인</th><th>문제 수</th><th>풀이</th><th>미풀이</th><th>정답률</th><th>진도</th></tr></thead>
+      <tbody id="domain-tbody"></tbody>
+    </table>
+  </div>
+  <div class="q-section">
+    <h2>문제 목록</h2>
+    <div class="filter-row">
+      <select id="domain-filter">
+        <option value="">전체 도메인</option>
+        <option value="1">1. 보안 (30%)</option>
+        <option value="2">2. 복원력 (26%)</option>
+        <option value="3">3. 고성능 (24%)</option>
+        <option value="4">4. 비용최적화 (20%)</option>
+      </select>
+      <button onclick="loadQ(1)">조회</button>
+    </div>
+    <div id="q-list"><div id="status">로딩 중...</div></div>
+    <div class="pagination" id="pagination" style="display:none">
+      <button id="btn-prev" onclick="changePage(-1)">◀ 이전</button>
+      <span class="page-info" id="page-info"></span>
+      <button id="btn-next" onclick="changePage(1)">다음 ▶</button>
+    </div>
+  </div>
+</div>
+<script>
+let currentPage=1, totalPages=1;
+const BADGE=['','badge-1','badge-2','badge-3','badge-4'];
+async function loadStats(){
+  const r=await fetch('/admin/api/stats');
+  const d=await r.json();
+  document.getElementById('s-total').textContent=d.total;
+  document.getElementById('s-seen').textContent=d.seen;
+  document.getElementById('s-acc').textContent=d.accuracy+'%';
+  document.getElementById('s-remain').textContent=d.total-d.seen;
+  const tb=document.getElementById('domain-tbody');
+  tb.innerHTML=d.domains.map(dm=>{
+    const pct=dm.total?Math.round(dm.seen/dm.total*100):0;
+    return `<tr>
+      <td><span class="badge ${BADGE[dm.domain]}">D${dm.domain}</span> ${dm.name}</td>
+      <td><b>${dm.total}</b></td><td>${dm.seen}</td><td>${dm.unseen}</td>
+      <td>${dm.accuracy}%</td>
+      <td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div> ${pct}%</td>
+    </tr>`;
+  }).join('');
+}
+async function loadQ(page){
+  currentPage=page;
+  const domain=document.getElementById('domain-filter').value;
+  const url='/admin/api/questions?page='+page+(domain?'&domain='+domain:'');
+  const r=await fetch(url);
+  const d=await r.json();
+  totalPages=Math.ceil(d.total/d.per_page)||1;
+  const list=document.getElementById('q-list');
+  if(!d.questions.length){list.innerHTML='<div id="status">문제가 없습니다.</div>';document.getElementById('pagination').style.display='none';return;}
+  list.innerHTML=d.questions.map(q=>`
+    <div class="q-row">
+      <div class="q-meta"><span class="badge ${BADGE[q.domain]}">D${q.domain}</span> #${q.id} · ${q.source_id} · 정답: ${JSON.parse(q.answer).join(',')}</div>
+      <div>${q.q_preview}${q.q_preview.length>=120?'…':''}</div>
+    </div>`).join('');
+  const pg=document.getElementById('pagination');
+  pg.style.display='flex';
+  document.getElementById('page-info').textContent=`${currentPage} / ${totalPages} 페이지 (총 ${d.total}문제)`;
+  document.getElementById('btn-prev').disabled=currentPage<=1;
+  document.getElementById('btn-next').disabled=currentPage>=totalPages;
+}
+function changePage(delta){if(currentPage+delta>=1&&currentPage+delta<=totalPages)loadQ(currentPage+delta);}
+loadStats();loadQ(1);
+</script>
+</body>
+</html>"""
+
+
+@mcp.custom_route("/admin", methods=["GET"])
+async def _admin(request) -> "Response":
+    from starlette.responses import HTMLResponse
+    return HTMLResponse(_ADMIN_HTML)
+
+
 # ── 내부 헬퍼 ──────────────────────────────────────────────────────────────
 
 def _row_to_question(row) -> dict:
