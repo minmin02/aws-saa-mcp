@@ -198,6 +198,8 @@ select{padding:7px 10px;border-radius:8px;border:1px solid #ddd;font-size:.83rem
 .ch.ng{border-color:#ea4335!important;background:#fce8e6!important}
 .ch-letter{font-weight:700;min-width:22px;color:#4285f4;font-size:.88rem;flex-shrink:0}
 .ch.ok .ch-letter{color:#34a853}.ch.ng .ch-letter{color:#ea4335}
+.ch-text{flex:1;min-width:0;word-break:break-word;overflow-wrap:break-word}
+.pdf-frame{width:100%;height:calc(100vh - 90px);border:none;border-radius:10px}
 .rb{padding:14px 18px;border-radius:10px;margin-bottom:14px;font-size:.87rem;font-weight:600}
 .rb-ok{background:#e6f4ea;border:1.5px solid #34a853;color:#1e6e34}
 .rb-ng{background:#fce8e6;border:1.5px solid #ea4335;color:#7b1c14}
@@ -224,6 +226,7 @@ select{padding:7px 10px;border-radius:8px;border:1px solid #ddd;font-size:.83rem
     <button class="tab on" onclick="gotoTab('dash',this)">대시보드</button>
     <button class="tab" onclick="gotoTab('list',this)">문제 목록</button>
     <button class="tab" onclick="gotoTab('quiz',this)" id="tab-quiz-btn">연습 모드</button>
+    <button class="tab" onclick="gotoTab('notes',this)">요약본</button>
   </div>
 </div>
 <div class="wrap">
@@ -336,6 +339,13 @@ select{padding:7px 10px;border-radius:8px;border:1px solid #ddd;font-size:.83rem
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- 요약본 -->
+<div id="tab-notes" class="panel">
+  <div class="card" style="padding:0;overflow:hidden">
+    <iframe class="pdf-frame" src="/admin/notes/pdf" title="AWS SAA-C03 요약본"></iframe>
   </div>
 </div>
 
@@ -460,7 +470,7 @@ async function loadAndRender(id){
   document.getElementById('qz-q').textContent=q.question;
   document.getElementById('qz-choices').innerHTML=
     Object.entries(q.choices).map(([k,v])=>
-      '<div class="ch" id="c-'+k+'" data-k="'+k+'"><span class="ch-letter">'+k+'</span><span>'+v+'</span></div>'
+      '<div class="ch" id="c-'+k+'" data-k="'+k+'"><span class="ch-letter">'+k+'</span><span class="ch-text">'+v+'</span></div>'
     ).join('');
   document.getElementById('qz-choices').onclick=function(e){
     const ch=e.target.closest('.ch');
@@ -555,6 +565,16 @@ loadDash();loadList(1);
 </script>
 </body>
 </html>"""
+
+
+@mcp.custom_route("/admin/notes/pdf", methods=["GET"])
+async def _admin_notes_pdf(request) -> "Response":
+    from pathlib import Path
+    from starlette.responses import FileResponse, JSONResponse
+    pdf_path = Path(__file__).parent.parent / "Udemy_AWS Solutions Architect Associate C03 강의 요약본(Stephane Maarek 강의).pdf"
+    if not pdf_path.exists():
+        return JSONResponse({"error": "PDF not found"}, status_code=404)
+    return FileResponse(str(pdf_path), media_type="application/pdf")
 
 
 @mcp.custom_route("/admin", methods=["GET"])
