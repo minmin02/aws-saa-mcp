@@ -460,8 +460,12 @@ async function loadAndRender(id){
   document.getElementById('qz-q').textContent=q.question;
   document.getElementById('qz-choices').innerHTML=
     Object.entries(q.choices).map(([k,v])=>
-      '<div class="ch" id="c-'+k+'" onclick="toggleCh(\''+k+'\')"><span class="ch-letter">'+k+'</span><span>'+v+'</span></div>'
+      '<div class="ch" id="c-'+k+'" data-k="'+k+'"><span class="ch-letter">'+k+'</span><span>'+v+'</span></div>'
     ).join('');
+  document.getElementById('qz-choices').onclick=function(e){
+    const ch=e.target.closest('.ch');
+    if(ch&&ch.dataset.k)toggleCh(ch.dataset.k);
+  };
   document.getElementById('qz-feedback').style.display='none';
   document.getElementById('btn-sub').style.display='';
   document.getElementById('btn-nxt').style.display='none';
