@@ -830,25 +830,17 @@ def main_http() -> None:
 
     init_db()
 
-    # DB < JSON 이면 자동 시드 (볼륨 경로 → 앱 번들 경로 순서로 탐색)
-    from pathlib import Path as _P
-    from db.schema import DB_PATH, get_connection as _gc
-    from db.seed import DEFAULT_RAW
+    # 시작 시 항상 UPSERT 시드 — INSERT OR REPLACE가 아닌 ON CONFLICT DO UPDATE라 id 보존
+    from db.schema import DB_PATH
+    from db.seed import DEFAULT_RAW, seed as _seed
     _candidates = [
         DB_PATH.parent / "questions_raw.json",  # 볼륨 경로
         DEFAULT_RAW,                             # 앱 번들 경로 (data/questions_raw.json)
     ]
     _raw = next((p for p in _candidates if p.exists()), None)
     if _raw:
-        import json as _json
-        conn = _gc()
-        db_count = conn.execute("SELECT COUNT(*) FROM questions").fetchone()[0]
-        conn.close()
-        json_count = len(_json.loads(_raw.read_text(encoding="utf-8")))
-        if db_count < json_count:
-            print(f"DB({db_count}개) < JSON({json_count}개). {_raw} 에서 시드합니다...")
-            from db.seed import seed
-            seed(_raw)
+        print(f"{_raw} 에서 시드(UPSERT)합니다...")
+        _seed(_raw)
 
     port = int(os.environ.get("PORT", 8000))
     app = _build_http_app()

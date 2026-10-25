@@ -41,10 +41,19 @@ def seed(raw_file: Path = DEFAULT_RAW) -> None:
         try:
             conn.execute(
                 """
-                INSERT OR IGNORE INTO questions
+                INSERT INTO questions
                     (source_id, question, choices, answer, explanation,
                      votes, domain, domain_name, services)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(source_id) DO UPDATE SET
+                    question    = excluded.question,
+                    choices     = excluded.choices,
+                    answer      = excluded.answer,
+                    explanation = excluded.explanation,
+                    votes       = excluded.votes,
+                    domain      = excluded.domain,
+                    domain_name = excluded.domain_name,
+                    services    = excluded.services
                 """,
                 (
                     q["source_id"],
