@@ -190,15 +190,15 @@ select{padding:7px 10px;border-radius:8px;border:1px solid #ddd;font-size:.83rem
 .qz-card{background:#fff;border-radius:16px;padding:28px 32px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
 .qz-meta{font-size:.73rem;color:#999;display:flex;gap:10px;align-items:center;margin-bottom:14px}
 .qz-q{font-size:.97rem;line-height:1.75;color:#1a1a2e;margin-bottom:22px;font-weight:500}
-.choices{display:flex;flex-direction:column;gap:9px;margin-bottom:22px}
-.ch{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-radius:10px;border:2px solid #e8eaed;cursor:pointer;transition:.15s;font-size:.87rem;line-height:1.5;user-select:none}
+.choices{display:flex;flex-direction:column;gap:12px;margin-bottom:22px}
+.ch{display:grid;grid-template-columns:24px 1fr;align-items:start;column-gap:12px;padding:14px 18px;border-radius:10px;border:2px solid #e8eaed;cursor:pointer;transition:.15s;font-size:.87rem;line-height:1.65;user-select:none}
 .ch:hover{border-color:#4285f4;background:#f0f4ff}
 .ch.sel{border-color:#4285f4;background:#e8f0fe}
 .ch.ok{border-color:#34a853!important;background:#e6f4ea!important}
 .ch.ng{border-color:#ea4335!important;background:#fce8e6!important}
-.ch-letter{font-weight:700;min-width:22px;color:#4285f4;font-size:.88rem;flex-shrink:0}
+.ch-letter{font-weight:700;color:#4285f4;font-size:.88rem}
 .ch.ok .ch-letter{color:#34a853}.ch.ng .ch-letter{color:#ea4335}
-.ch-text{flex:1;min-width:0;word-break:break-word;overflow-wrap:break-word}
+.ch-text{word-break:break-word;overflow-wrap:anywhere;white-space:normal;min-width:0}
 .pdf-frame{width:100%;height:calc(100vh - 90px);border:none;border-radius:10px}
 .rb{padding:14px 18px;border-radius:10px;margin-bottom:14px;font-size:.87rem;font-weight:600}
 .rb-ok{background:#e6f4ea;border:1.5px solid #34a853;color:#1e6e34}
