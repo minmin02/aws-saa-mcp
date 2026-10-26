@@ -198,10 +198,7 @@ select{padding:7px 10px;border-radius:8px;border:1px solid #ddd;font-size:.83rem
 .ch.ng{border-color:#ea4335!important;background:#fce8e6!important}
 .ch-letter{font-weight:700;color:#4285f4;font-size:.88rem}
 .ch.ok .ch-letter{color:#34a853}.ch.ng .ch-letter{color:#ea4335}
-.ch-body{min-width:0}
-.ch-text{word-break:break-word;overflow-wrap:anywhere;white-space:normal;display:block}
-.ch-text.collapsed{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.more-btn{margin-top:5px;font-size:.73rem;color:#4285f4;background:none;border:none;cursor:pointer;padding:0;line-height:1.4;display:inline-block;font-weight:600}
+.ch-body{min-width:0;word-break:break-word;overflow-wrap:anywhere;white-space:normal}
 .pdf-frame{width:100%;height:calc(100vh - 90px);border:none;border-radius:10px}
 .rb{padding:14px 18px;border-radius:10px;margin-bottom:14px;font-size:.87rem;font-weight:600}
 .rb-ok{background:#e6f4ea;border:1.5px solid #34a853;color:#1e6e34}
@@ -471,20 +468,14 @@ async function loadAndRender(id){
     '<span>#'+q.id+'\xb7'+q.source_id+'</span>'+
     (qzMulti?'<span style="color:#e67700;font-weight:700">복수 정답</span>':'');
   document.getElementById('qz-q').textContent=q.question;
-  const TRUNC=100;
   document.getElementById('qz-choices').innerHTML=
-    Object.entries(q.choices).map(([k,v])=>{
-      const long=v.length>TRUNC;
-      return '<div class="ch" id="c-'+k+'" data-k="'+k+'">'+
+    Object.entries(q.choices).map(([k,v])=>
+      '<div class="ch" id="c-'+k+'" data-k="'+k+'">'+
         '<span class="ch-letter">'+k+'</span>'+
-        '<span class="ch-body">'+
-          '<span class="ch-text'+(long?' collapsed':'')+'">'+v+'</span>'+
-          (long?'<button class="more-btn">펼치기 ▼</button>':'')+
-        '</span>'+
-      '</div>';
-    }).join('');
+        '<span class="ch-body">'+v+'</span>'+
+      '</div>'
+    ).join('');
   document.getElementById('qz-choices').onclick=function(e){
-    if(e.target.classList.contains('more-btn')){toggleMore(e.target);return;}
     const ch=e.target.closest('.ch');
     if(ch&&ch.dataset.k)toggleCh(ch.dataset.k);
   };
@@ -494,12 +485,6 @@ async function loadAndRender(id){
   document.getElementById('qz-exp').style.display='none';
   document.getElementById('qz-votes').innerHTML='';
   document.getElementById('qz-hint').textContent=qzMulti?'복수 선택 후 제출':'A/B/C/D 키로 선택 \xb7 Enter로 제출';
-}
-function toggleMore(btn){
-  const txt=btn.previousElementSibling;
-  const collapsed=txt.classList.contains('collapsed');
-  txt.classList.toggle('collapsed');
-  btn.textContent=collapsed?'접기 ▲':'펼치기 ▼';
 }
 function toggleCh(k){
   if(document.getElementById('btn-sub').style.display==='none')return;
