@@ -14,6 +14,7 @@ dependencies = [
     "rich>=13.0.0",
     "uvicorn>=0.30.0",
     "starlette>=0.40.0",
+    "pdfminer-six>=20260107",
 ]
 
 [build-system]
@@ -27,6 +28,7 @@ aws-saa-scrape      = "scraper.examtopics:main"
 aws-saa-seed        = "db.seed:main"
 aws-saa-embed       = "embeddings.search:build_index"
 aws-saa-qmd         = "scraper.parse_qmd:main"
+aws-saa-pdf         = "scraper.parse_pdf:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["scraper", "db", "embeddings", "server", "domain_mapping"]
