@@ -586,6 +586,12 @@ async def _admin(request) -> "Response":
     return HTMLResponse(_ADMIN_HTML)
 
 
+@mcp.custom_route("/", methods=["GET"])
+async def _root(request) -> "Response":
+    from starlette.responses import RedirectResponse
+    return RedirectResponse(url="/admin", status_code=302)
+
+
 # ── 내부 헬퍼 ──────────────────────────────────────────────────────────────
 
 def _row_to_question(row) -> dict:
